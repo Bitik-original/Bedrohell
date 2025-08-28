@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bedrohell Server Status</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            background-color: rgba(0, 0, 0, 0.7);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            max-width: 600px;
+            width: 100%;
+            border: 3px solid #6a4fff;
+            position: relative;
+            overflow: hidden;
+            animation: containerGlow 3s infinite alternate;
+        }
+        
+        @keyframes containerGlow {
+            0% {
+                box-shadow: 0 0 25px rgba(106, 79, 255, 0.7);
+            }
+            100% {
+                box-shadow: 0 0 45px rgba(159, 122, 234, 0.9);
+            }
+        }
+        
+        h1 {
+            margin-bottom: 30px;
+            color: #6a4fff;
+            text-shadow: 0 0 15px rgba(106, 79, 255, 0.8);
+            font-size: 2.8rem;
+            letter-spacing: 2px;
+            animation: textPulse 2s infinite alternate;
+        }
+        
+        @keyframes textPulse {
+            0% {
+                text-shadow: 0 0 15px rgba(106, 79, 255, 0.8);
+            }
+            100% {
+                text-shadow: 0 0 25px rgba(159, 122, 234, 1);
+            }
+        }
+        
+        .server-icon {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 20px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #6a4fff 0%, #9f7aea 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 4px solid #4cc9f0;
+            box-shadow: 0 0 25px rgba(76, 201, 240, 0.7);
+            animation: iconFloat 4s infinite ease-in-out;
+        }
+        
+        @keyframes iconFloat {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+        
+        .server-icon i {
+            font-size: 50px;
+            color: white;
+        }
+        
+        .server-info {
+            margin: 25px 0;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .server-info::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            animation: shineEffect 3s infinite;
+        }
+        
+        @keyframes shineEffect {
+            100% {
+                left: 100%;
+            }
+        }
+        
+        .status {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 20px 0;
+            font-size: 1.4rem;
+        }
+        
+        .status-indicator {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin-right: 15px;
+            position: relative;
+        }
+        
+        .status-indicator::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                opacity: 0.8;
+            }
+            70% {
+                transform: scale(2.5);
+                opacity: 0;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 0;
+            }
+        }
+        
+        .online {
+            background-color: #2ecc71;
+        }
+        
+        .online::after {
+            background-color: #2ecc71;
+        }
+        
+        .offline {
+            background-color: #e74c3c;
+        }
+        
+        .offline::after {
+            background-color: #e74c3c;
+        }
+        
+        .players {
+            margin: 30px 0;
+            position: relative;
+        }
+        
+        .player-count {
+            font-size: 3.5rem;
+            font-weight: bold;
+            color: #4cc9f0;
+            margin: 15px 0;
+            text-shadow: 0 0 15px rgba(76, 201, 240, 0.7);
+            animation: countGlow 2s infinite alternate;
+        }
+        
+        @keyframes countGlow {
+            0% {
+                text-shadow: 0 0 15px rgba(76, 201, 240, 0.7);
+            }
+            100% {
+                text-shadow: 0 0 25px rgba(76, 201, 240, 1);
+            }
+        }
+        
+        .player-bar {
+            height: 30px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            margin: 20px 0;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .player-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #6a4fff, #9f7aea);
+            border-radius: 15px;
+            transition: width 1.5s ease-in-out;
+            box-shadow: 0 0 15px rgba(106, 79, 255, 0.7);
+        }
+        
+        .ip-address {
+            margin: 25px 0;
+            padding: 15px;
+            background-color: rgba(76, 201, 240, 0.2);
+            border-radius: 10px;
+            font-family: monospace;
+            font-size: 1.2rem;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid rgba(76, 201, 240, 0.5);
+        }
+        
+        button {
+            background: linear-gradient(to right, #6a4fff, #9f7aea);
+            border: none;
+            padding: 15px 35px;
+            border-radius: 50px;
+            color: white;
+            font-weight: bold;
+            font-size: 1.1rem;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 20px rgba(106, 79, 255, 0.5);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transition: 0.5s;
+        }
+        
+        button:hover::before {
+            left: 100%;
+        }
+        
+        button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(106, 79, 255, 0.7);
+        }
+        
+        .last-updated {
+            margin-top: 25px;
+            font-size: 0.9rem;
+            color: #aaa;
+        }
+        
+        .loading {
+            animation: spin 1.5s infinite linear;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .minecraft-character {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            bottom: -25px;
+            left: 10%;
+            opacity: 0.7;
+            animation: moveCharacter 15s infinite linear;
+        }
+        
+        @keyframes moveCharacter {
+            0% {
+                left: -50px;
+            }
+            100% {
+                left: calc(100% + 50px);
+            }
+        }
+        
+        .particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background-color: #6a4fff;
+            border-radius: 50%;
+            opacity: 0;
+            animation: particleFloat 8s infinite linear;
+        }
+        
+        @keyframes particleFloat {
+            0% {
+                transform: translateY(100%) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100%) rotate(360deg);
+                opacity: 0;
+            }
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 25px;
+            }
+            
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            .player-count {
+                font-size: 2.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="server-icon">
+            <i class="fas fa-server"></i>
+        </div>
+        
+        <h1>Bedrohell Server</h1>
+        
+        <div class="server-info">
+            <div class="status">
+                <div class="status-indicator" id="status-indicator"></div>
+                <span id="status-text">Проверка статуса...</span>
+            </div>
+            
+            <div class="players">
+                <div>Игроков онлайн:</div>
+                <div class="player-count" id="player-count">-</div>
+                <div>из <span id="max-players">-</span> макс.</div>
+                
+                <div class="player-bar">
+                    <div class="player-fill" id="player-fill"></div>
+                </div>
+            </div>
+            
+            <div class="ip-address">
+                <i class="fas fa-network-wired"></i> IP: 188.127.241.22:25776
+            </div>
+        </div>
+        
+        <button id="refresh-btn">
+            <i class="fas fa-sync-alt"></i> Обновить статус
+        </button>
+        
+        <div class="last-updated">
+            Последнее обновление: <span id="last-updated">-</span>
+        </div>
+        
+        <div class="minecraft-character">
+            <i class="fas fa-user" style="color: #6a4fff; font-size: 40px;"></i>
+        </div>
+    </div>
+    
+    <div class="particles" id="particles"></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const statusIndicator = document.getElementById('status-indicator');
+            const statusText = document.getElementById('status-text');
+            const playerCount = document.getElementById('player-count');
+            const maxPlayers = document.getElementById('max-players');
+            const playerFill = document.getElementById('player-fill');
+            const refreshBtn = document.getElementById('refresh-btn');
+            const lastUpdated = document.getElementById('last-updated');
+            const particlesContainer = document.getElementById('particles');
+            
+            // Создаем частицы для фона
+            createParticles();
+            
+            // Функция для обновления статуса сервера
+            function updateServerStatus() {
+                // Добавляем класс loading для индикации процесса загрузки
+                statusIndicator.classList.add('loading');
+                statusText.textContent = 'Проверка статуса...';
+                playerCount.textContent = '-';
+                maxPlayers.textContent = '-';
+                playerFill.style.width = '0%';
+                
+                // Используем API для проверки статуса Minecraft сервера
+                fetch(`https://api.mcsrvstat.us/bedrock/2/${encodeURIComponent('188.127.241.22:25776')}`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Ошибка сети');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        // Обновляем время последнего обновления
+                        lastUpdated.textContent = new Date().toLocaleTimeString();
+                        
+                        if (data.online) {
+                            // Сервер онлайн
+                            statusIndicator.classList.remove('loading');
+                            statusIndicator.classList.add('online');
+                            statusText.textContent = 'Сервер работает';
+                            playerCount.textContent = data.players.online;
+                            maxPlayers.textContent = data.players.max;
+                            
+                            // Анимируем заполнение бара игроков
+                            const fillPercent = (data.players.online / data.players.max) * 100;
+                            setTimeout(() => {
+                                playerFill.style.width = `${fillPercent}%`;
+                            }, 300);
+                        } else {
+                            // Сервер оффлайн
+                            statusIndicator.classList.remove('loading');
+                            statusIndicator.classList.add('offline');
+                            statusText.textContent = 'Сервер не работает';
+                            playerCount.textContent = '0';
+                            maxPlayers.textContent = '0';
+                            playerFill.style.width = '0%';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Ошибка при получении данных:', error);
+                        statusIndicator.classList.remove('loading');
+                        statusIndicator.classList.add('offline');
+                        statusText.textContent = 'Ошибка подключения';
+                        lastUpdated.textContent = new Date().toLocaleTimeString();
+                    });
+            }
+            
+            // Функция для создания частиц фона
+            function createParticles() {
+                for (let i = 0; i < 30; i++) {
+                    const particle = document.createElement('div');
+                    particle.classList.add('particle');
+                    
+                    // Случайные позиция и задержка анимации
+                    particle.style.left = `${Math.random() * 100}%`;
+                    particle.style.animationDelay = `${Math.random() * 8}s`;
+                    
+                    // Случайный размер
+                    const size = Math.random() * 3 + 2;
+                    particle.style.width = `${size}px`;
+                    particle.style.height = `${size}px`;
+                    
+                    // Случайный цвет
+                    const colors = ['#6a4fff', '#9f7aea', '#4cc9f0', '#2ecc71'];
+                    particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                    
+                    particlesContainer.appendChild(particle);
+                }
+            }
+            
+            // Обновляем статус при загрузке страницы
+            updateServerStatus();
+            
+            // Обновляем статус при нажатии на кнопку
+            refreshBtn.addEventListener('click', updateServerStatus);
+            
+            // Автоматическое обновление каждые 2 минуты
+            setInterval(updateServerStatus, 120000);
+        });
+    </script>
+</body>
+</html>
